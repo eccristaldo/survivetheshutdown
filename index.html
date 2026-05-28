@@ -3,716 +3,909 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home Energy Risk Assessment</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<title>Survive The Shutdown — Emergency Preparedness Resource</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #cc0000;
-    --red-bright: #ff1a1a;
-    --red-dark: #8b0000;
-    --yellow: #ffcc00;
-    --bg: #0a0a0a;
-    --bg2: #111111;
-    --bg3: #1a1a1a;
-    --border: #2a2a2a;
-    --text: #e8e8e8;
-    --text-dim: #888;
+    --ink: #1a1a1a;
+    --ink-light: #444;
+    --ink-dim: #888;
+    --paper: #f5f2eb;
+    --paper-dark: #ede9e0;
+    --rule: #c8c0b0;
+    --red: #b91c1c;
+    --red-light: #fee2e2;
+    --accent: #8b1a1a;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Source Sans 3', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.7;
   }
 
-  /* Scanline overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(0,0,0,0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
+  /* Top ticker */
+  .ticker-wrap {
+    background: var(--ink);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 7px 0;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
-  /* Alert bar */
-  .alert-bar {
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-inner span {
+    margin: 0 40px;
+    opacity: 0.6;
+  }
+
+  .ticker-inner strong { color: #e53e3e; margin-right: 8px; }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Masthead */
+  .masthead {
+    background: var(--paper);
+    border-bottom: 3px double var(--ink);
+    padding: 24px 20px 16px;
+    text-align: center;
+  }
+
+  .masthead-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+
+  .masthead-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+
+  .masthead-title span { color: var(--red); }
+
+  .masthead-tagline {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-dim);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 0;
+    margin-top: 10px;
+  }
+
+  /* Nav */
+  .nav {
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .nav a {
+    color: #ccc;
+    text-decoration: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border-right: 1px solid #333;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav a:first-child { border-left: 1px solid #333; }
+  .nav a:hover { color: #fff; background: #333; }
+  .nav a.active { color: #fff; background: var(--red); border-color: var(--red); }
+
+  /* Alert banner */
+  .alert-banner {
     background: var(--red);
     color: #fff;
     text-align: center;
     padding: 10px 20px;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Barlow Condensed', sans-serif;
     font-size: 13px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    animation: pulse-bar 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse-bar {
-    0%, 100% { background: var(--red); }
-    50% { background: var(--red-dark); }
-  }
-
-  .alert-bar span {
-    display: inline-block;
-    margin: 0 8px;
-    opacity: 0.6;
-  }
-
-  /* Header */
-  .header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  .header-badge {
-    background: var(--red);
-    color: #fff;
-    font-family: 'Oswald', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    padding: 4px 10px;
-    text-transform: uppercase;
-  }
-
-  .header-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 14px;
-    color: var(--text-dim);
     letter-spacing: 1px;
     text-transform: uppercase;
   }
 
-  /* Main container */
+  /* Main layout */
   .container {
-    max-width: 640px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 30px 20px 60px;
+    padding: 0 20px;
   }
 
-  /* Quiz wrapper */
-  .quiz-wrapper {
-    position: relative;
+  /* Hero section */
+  .hero {
+    padding: 40px 0 20px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 40px;
   }
 
-  /* Intro screen */
-  .intro-screen {
-    text-align: center;
-    padding: 20px 0;
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+    align-items: start;
   }
 
-  .warning-icon {
-    font-size: 56px;
-    line-height: 1;
-    margin-bottom: 20px;
-    display: block;
-    animation: flicker 3s ease-in-out infinite;
+  @media (max-width: 700px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-sidebar { border-left: none !important; padding-left: 0 !important; border-top: 2px solid var(--rule); padding-top: 24px !important; }
   }
 
-  @keyframes flicker {
-    0%, 90%, 100% { opacity: 1; }
-    92% { opacity: 0.4; }
-    94% { opacity: 1; }
-    96% { opacity: 0.3; }
-    98% { opacity: 1; }
+  .hero-label {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    margin-bottom: 14px;
   }
 
-  .intro-headline {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(26px, 5vw, 38px);
+  .hero-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 46px);
     font-weight: 700;
     line-height: 1.15;
-    color: #fff;
-    text-transform: uppercase;
-    margin-bottom: 12px;
+    color: var(--ink);
+    margin-bottom: 16px;
   }
 
-  .intro-headline .red { color: var(--red-bright); }
-
-  .intro-sub {
-    font-size: 16px;
-    color: var(--text-dim);
+  .hero-deck {
+    font-size: 18px;
+    color: var(--ink-light);
+    font-style: italic;
     line-height: 1.6;
-    margin-bottom: 28px;
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+    margin-bottom: 16px;
   }
 
-  .timer-box {
-    background: var(--bg3);
-    border: 1px solid var(--red-dark);
-    border-left: 4px solid var(--red);
-    padding: 14px 20px;
-    margin-bottom: 28px;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .hero-body {
+    font-size: 15px;
+    color: var(--ink-light);
+    line-height: 1.8;
+    column-count: 2;
+    column-gap: 28px;
   }
 
-  .timer-dot {
-    width: 10px;
-    height: 10px;
-    background: var(--red-bright);
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: blink 1s ease-in-out infinite;
+  @media (max-width: 700px) { .hero-body { column-count: 1; } }
+
+  .hero-body p { margin-bottom: 14px; break-inside: avoid; }
+
+  .hero-sidebar {
+    border-left: 2px solid var(--rule);
+    padding-left: 28px;
+    padding-top: 0;
   }
 
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.1; }
-  }
-
-  .timer-text {
-    font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
-
-  .timer-text strong { color: var(--yellow); }
-
-  .btn-start {
-    display: block;
-    width: 100%;
-    background: var(--red);
-    color: #fff;
-    border: none;
-    padding: 18px 30px;
-    font-family: 'Oswald', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.2s;
-  }
-
-  .btn-start:hover { background: var(--red-bright); }
-
-  .btn-start::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-    animation: shimmer 2.5s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 200%; }
-  }
-
-  .btn-note {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 10px;
-    text-align: center;
-  }
-
-  /* Question screen */
-  .question-screen { display: none; }
-
-  .progress-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  .progress-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 12px;
-    color: var(--text-dim);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-
-  .progress-count {
-    font-family: 'Oswald', sans-serif;
-    font-size: 12px;
-    color: var(--red-bright);
-    letter-spacing: 1px;
-  }
-
-  .progress-bar {
-    height: 3px;
-    background: var(--border);
-    margin-bottom: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--red);
-    transition: width 0.5s ease;
-    position: relative;
-  }
-
-  .progress-fill::after {
-    content: '';
-    position: absolute;
-    right: 0; top: 0;
-    width: 20px; height: 100%;
-    background: linear-gradient(90deg, var(--red), var(--red-bright));
-    filter: blur(3px);
-  }
-
-  .question-number {
-    font-family: 'Oswald', sans-serif;
+  .sidebar-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
     font-size: 11px;
-    color: var(--red);
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    color: var(--ink-dim);
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
   }
 
-  .question-text {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(20px, 4vw, 28px);
-    font-weight: 600;
-    line-height: 1.25;
-    color: #fff;
-    margin-bottom: 28px;
-  }
-
-  .options-list {
+  /* Stat boxes */
+  .stat-boxes {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 28px;
   }
 
-  .option-btn {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 16px 20px;
-    text-align: left;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.15s ease;
+  .stat-box {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--red);
+    padding: 12px 14px;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--ink-light);
+    line-height: 1.4;
+  }
+
+  /* Article grid */
+  .section-header {
     display: flex;
     align-items: center;
     gap: 14px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .option-btn:hover {
-    border-color: var(--red);
-    background: rgba(204,0,0,0.08);
-    color: #fff;
-  }
-
-  .option-btn.selected {
-    border-color: var(--red-bright);
-    background: rgba(204,0,0,0.15);
-    color: #fff;
-  }
-
-  .option-letter {
-    width: 26px;
-    height: 26px;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Oswald', sans-serif;
-    font-size: 12px;
-    color: var(--text-dim);
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-
-  .option-btn:hover .option-letter,
-  .option-btn.selected .option-letter {
-    border-color: var(--red);
-    color: var(--red-bright);
-  }
-
-  /* Results screen */
-  .results-screen { display: none; }
-
-  .risk-meter {
-    background: var(--bg2);
-    border: 1px solid var(--red-dark);
-    padding: 24px 20px;
     margin-bottom: 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
   }
 
-  .risk-meter::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--red-dark), var(--red-bright), var(--red-dark));
-    animation: scan 2s linear infinite;
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--ink);
+    white-space: nowrap;
   }
 
-  @keyframes scan {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+  .section-rule {
+    flex: 1;
+    height: 2px;
+    background: var(--ink);
   }
 
-  .risk-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 12px;
-    color: var(--text-dim);
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-bottom: 50px;
+  }
+
+  @media (max-width: 700px) { .articles-grid { grid-template-columns: 1fr; } }
+
+  .article-card {
+    border-top: 3px solid var(--ink);
+    padding-top: 16px;
+  }
+
+  .article-card .tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
     letter-spacing: 2px;
     text-transform: uppercase;
+    color: var(--red);
     margin-bottom: 8px;
   }
 
-  .risk-level {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(36px, 8vw, 56px);
+  .article-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
     font-weight: 700;
-    color: var(--red-bright);
-    line-height: 1;
-    margin-bottom: 6px;
-    animation: flicker 4s ease-in-out infinite;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 10px;
+    cursor: pointer;
   }
 
-  .risk-subtitle {
+  .article-card h3:hover { color: var(--red); }
+
+  .article-card p {
     font-size: 13px;
-    color: var(--text-dim);
-    letter-spacing: 0.5px;
+    color: var(--ink-light);
+    line-height: 1.6;
   }
 
-  .result-headline {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(22px, 4.5vw, 32px);
+  .article-card .byline {
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  /* Tips section */
+  .tips-section {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-top: 4px solid var(--ink);
+    padding: 32px;
+    margin-bottom: 50px;
+  }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 700px) { .tips-grid { grid-template-columns: 1fr; } }
+
+  .tip-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .tip-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
     font-weight: 700;
-    color: #fff;
+    color: var(--rule);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 36px;
+  }
+
+  .tip-content h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 5px;
+  }
+
+  .tip-content p {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+
+  /* Contact form */
+  .contact-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    margin-bottom: 60px;
+    padding-top: 10px;
+  }
+
+  @media (max-width: 700px) { .contact-section { grid-template-columns: 1fr; } }
+
+  .contact-intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
     line-height: 1.2;
     margin-bottom: 14px;
-    text-transform: uppercase;
   }
 
-  .result-headline .yellow { color: var(--yellow); }
-
-  .result-body {
-    font-size: 15px;
-    color: #bbb;
+  .contact-intro p {
+    font-size: 14px;
+    color: var(--ink-light);
     line-height: 1.7;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
-  .result-body strong { color: #fff; }
-
-  .warning-list {
-    background: var(--bg3);
-    border-left: 3px solid var(--red);
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .warning-item {
+  .contact-detail {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    font-size: 14px;
-    color: #bbb;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--ink-light);
   }
 
-  .warning-item .icon { color: var(--red-bright); flex-shrink: 0; font-size: 15px; }
-
-  .btn-cta {
+  .contact-detail strong {
+    color: var(--ink);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
     display: block;
+    margin-bottom: 2px;
+  }
+
+  /* Form */
+  .form-box {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 28px;
+  }
+
+  .form-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 5px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
     width: 100%;
-    background: var(--red);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 10px 12px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--ink);
+  }
+
+  .form-group textarea { resize: vertical; min-height: 100px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--ink);
     color: #fff;
     border: none;
-    padding: 20px 30px;
-    font-family: 'Oswald', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    padding: 14px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
     transition: background 0.2s;
-    margin-bottom: 10px;
+    margin-top: 6px;
   }
 
-  .btn-cta:hover { background: var(--red-bright); }
+  .btn-submit:hover { background: var(--red); }
 
-  .btn-cta::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-    animation: shimmer 2s ease-in-out infinite;
-  }
-
-  .cta-note {
-    font-size: 12px;
-    color: var(--text-dim);
+  .form-disclaimer {
+    font-size: 11px;
+    color: var(--ink-dim);
     text-align: center;
+    margin-top: 10px;
     line-height: 1.5;
   }
 
-  .cta-note .dot {
-    display: inline-block;
-    width: 6px; height: 6px;
-    background: var(--red-bright);
-    border-radius: 50%;
-    margin-right: 5px;
-    vertical-align: middle;
-    animation: blink 1s infinite;
+  /* Success message */
+  .form-success {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
   }
 
-  /* Divider */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 28px 0;
+  .form-success h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .form-success p { font-size: 14px; color: var(--ink-light); }
+
+  /* About strip */
+  .about-strip {
+    background: var(--ink);
+    color: #ccc;
+    padding: 32px;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  @media (max-width: 700px) { .about-strip { grid-template-columns: 1fr; } }
+
+  .about-strip h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .about-strip p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #aaa;
   }
 
   /* Footer */
   .footer {
+    background: #111;
+    color: #555;
     text-align: center;
     padding: 20px;
     font-size: 11px;
-    color: #444;
-    border-top: 1px solid var(--border);
+    line-height: 1.8;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
   }
 
-  /* Fade in animation */
-  .fade-in {
-    animation: fadeIn 0.4s ease;
+  .footer a { color: #666; text-decoration: none; margin: 0 8px; }
+  .footer a:hover { color: #999; }
+
+  /* Divider ornament */
+  .ornament {
+    text-align: center;
+    color: var(--rule);
+    font-size: 18px;
+    letter-spacing: 8px;
+    margin: 10px 0 30px;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* Pull quote */
+  .pull-quote {
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding: 20px 0;
+    margin: 24px 0;
+    text-align: center;
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .pull-quote cite {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display: block;
+    margin-top: 8px;
   }
 </style>
 </head>
 <body>
 
-<div class="alert-bar">
-  ⚠️ <span>•</span> WARNING: This page has been taken down 3 times this week <span>•</span> ⚠️
-</div>
-
-<div class="header">
-  <div class="header-badge">Urgent</div>
-  <div class="header-title">Home Energy Risk Assessment</div>
-</div>
-
-<div class="container">
-  <div class="quiz-wrapper">
-
-    <!-- INTRO SCREEN -->
-    <div class="intro-screen fade-in" id="introScreen">
-      <span class="warning-icon">⚡</span>
-      <h1 class="intro-headline">Is Your Home <span class="red">Completely Vulnerable</span> Right Now?</h1>
-      <p class="intro-sub">Take this 60-second assessment to find out if your family is at risk — and what thousands of Americans are quietly doing about it.</p>
-
-      <div class="timer-box">
-        <div class="timer-dot"></div>
-        <div class="timer-text">
-          <strong>⚠️ This page is being actively suppressed.</strong><br>
-          Power companies have filed 22 cease and desist letters to remove it. If it's still up — don't wait.
-        </div>
-      </div>
-
-      <button class="btn-start" onclick="startQuiz()">
-        ▶ &nbsp; Start My Assessment Now
-      </button>
-      <p class="btn-note">Takes 60 seconds · 5 questions · Free</p>
-    </div>
-
-    <!-- QUESTION SCREEN -->
-    <div class="question-screen" id="questionScreen">
-      <div class="progress-header">
-        <span class="progress-label">Assessment Progress</span>
-        <span class="progress-count" id="progressCount">Question 1 of 5</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width: 20%"></div>
-      </div>
-
-      <div id="questionContent"></div>
-    </div>
-
-    <!-- RESULTS SCREEN -->
-    <div class="results-screen" id="resultsScreen">
-      <div class="risk-meter fade-in">
-        <div class="risk-label">Your Risk Level</div>
-        <div class="risk-level">HIGH RISK</div>
-        <div class="risk-subtitle">Based on your answers — your home is currently exposed</div>
-      </div>
-
-      <h2 class="result-headline fade-in">Your Home Is <span class="yellow">Not Protected</span> From What's Coming</h2>
-
-      <p class="result-body fade-in">
-        Based on your answers, your household falls into the <strong>high-risk category</strong> — meaning a single grid failure, rate hike, or government failure could leave your family completely exposed.<br><br>
-        Thousands of American homeowners have already discovered a little-known method to protect themselves — completely off the grid, with <strong>no solar panels, no generators, and no monthly payments.</strong>
-      </p>
-
-      <div class="warning-list fade-in">
-        <div class="warning-item"><span class="icon">▶</span> The power grid is more fragile than the government admits</div>
-        <div class="warning-item"><span class="icon">▶</span> Electric bills are projected to increase 40% in the next 3 years</div>
-        <div class="warning-item"><span class="icon">▶</span> FEMA response times average 5–7 days after major outages</div>
-        <div class="warning-item"><span class="icon">▶</span> Most families have less than 24 hours of backup power</div>
-      </div>
-
-      <a href="YOUR_VSL_URL_HERE" class="btn-cta">
-        Watch The Free Video Now →
-      </a>
-      <p class="cta-note">
-        <span class="dot"></span> This page keeps getting taken down. Watch before it disappears again.
-      </p>
-    </div>
-
+<!-- Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <strong>ALERT</strong> FEMA reports 47% of American households have zero emergency power backup &nbsp;
+    <span>•</span>&nbsp;
+    <strong>UPDATE</strong> U.S. power grid outages up 64% since 2000 — experts warn of accelerating failure &nbsp;
+    <span>•</span>&nbsp;
+    <strong>REPORT</strong> Average storm-related outage now lasts 8+ hours — triple the 2010 average &nbsp;
+    <span>•</span>&nbsp;
+    <strong>ALERT</strong> FEMA reports 47% of American households have zero emergency power backup &nbsp;
+    <span>•</span>&nbsp;
+    <strong>UPDATE</strong> U.S. power grid outages up 64% since 2000 — experts warn of accelerating failure &nbsp;
+    <span>•</span>&nbsp;
+    <strong>REPORT</strong> Average storm-related outage now lasts 8+ hours — triple the 2010 average &nbsp;
+    <span>•</span>
   </div>
 </div>
 
+<!-- Masthead -->
+<div class="masthead">
+  <div class="masthead-eyebrow">Independent Emergency Preparedness Resource</div>
+  <div class="masthead-title">Survive The <span>Shutdown</span></div>
+  <div class="masthead-tagline">Practical knowledge for American families preparing for grid failure, natural disasters, and energy emergencies</div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="#" class="active">Home</a>
+  <a href="#preparedness">Preparedness</a>
+  <a href="#grid">Grid Security</a>
+  <a href="#disasters">Natural Disasters</a>
+  <a href="#resources">Resources</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- Alert banner -->
+<div class="alert-banner">
+  ⚠ &nbsp; Hurricane Season 2025: NOAA forecasts above-average activity — Is your family prepared? &nbsp; ⚠
+</div>
+
+<!-- Hero -->
+<div class="container">
+  <div class="hero" id="preparedness">
+    <div class="hero-grid">
+      <div class="hero-main">
+        <div class="hero-label">Featured Report</div>
+        <h1 class="hero-headline">America's Power Grid Is More Vulnerable Than Officials Will Admit — Here's What Every Homeowner Needs to Know</h1>
+        <div class="hero-deck">
+          Independent researchers and former utility engineers warn that the U.S. electrical infrastructure is operating at critical stress levels, leaving millions of families exposed to extended outages with no backup plan.
+        </div>
+        <div class="hero-body">
+          <p>Every year, millions of American households lose power for days or weeks at a time — not just from hurricanes and tornadoes, but from aging infrastructure that officials have quietly described as "dangerously outdated" in internal reports rarely shared with the public.</p>
+          <p>The numbers are sobering. According to data compiled from utility filings and FEMA emergency reports, the average American will experience more power outages in the next decade than in any previous ten-year period in modern history. Climate-related grid stress, cyberattack vulnerability, and deferred maintenance have created what some engineers call a "perfect storm" of systemic risk.</p>
+          <p>What's most alarming is not the frequency of outages, but the duration. Where outages once lasted hours, they now routinely stretch into days — and in some documented cases, weeks. For households without backup power, this means no refrigeration, no medical equipment, no heating or cooling, and in many cases, no clean water.</p>
+          <p>Preparedness experts emphasize that the window to act is before a crisis, not during. "Most families wait until the storm is already on the radar," says one longtime emergency management consultant. "By then, generators are sold out, fuel lines are a mile long, and the options are gone."</p>
+        </div>
+        <div class="pull-quote">
+          <p>"The question is no longer whether your area will experience a major outage — it's whether your family will be ready when it does."</p>
+          <cite>— Emergency Preparedness Quarterly, 2024</cite>
+        </div>
+      </div>
+
+      <div class="hero-sidebar">
+        <div class="sidebar-section-title">By The Numbers</div>
+        <div class="stat-boxes">
+          <div class="stat-box">
+            <div class="stat-number">64%</div>
+            <div class="stat-label">Increase in major power outages across the U.S. since 2000</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">8+ hrs</div>
+            <div class="stat-label">Average duration of storm-related outages — triple the 2010 average</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">47%</div>
+            <div class="stat-label">Of U.S. households have no emergency power backup whatsoever</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">$150B</div>
+            <div class="stat-label">Annual economic cost of power outages to American families and businesses</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section-title">Most At Risk</div>
+        <div style="font-size:13px; color: var(--ink-light); line-height:1.7;">
+          <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--rule); padding:6px 0;"><span>Florida</span><span style="color:var(--red); font-weight:600;">CRITICAL</span></div>
+          <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--rule); padding:6px 0;"><span>Texas</span><span style="color:var(--red); font-weight:600;">CRITICAL</span></div>
+          <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--rule); padding:6px 0;"><span>California</span><span style="color:var(--red); font-weight:600;">CRITICAL</span></div>
+          <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--rule); padding:6px 0;"><span>Louisiana</span><span style="color:#c2410c; font-weight:600;">HIGH</span></div>
+          <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--rule); padding:6px 0;"><span>New York</span><span style="color:#c2410c; font-weight:600;">HIGH</span></div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0;"><span>Georgia</span><span style="color:#d97706; font-weight:600;">ELEVATED</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Articles -->
+  <div class="ornament">— ✦ —</div>
+  <div class="section-header" id="grid">
+    <div class="section-title">Latest Reports</div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="articles-grid">
+    <div class="article-card">
+      <div class="tag">Grid Security</div>
+      <h3>Why Texas Froze — And Why It Could Happen Again, Anywhere</h3>
+      <p>The 2021 Texas grid failure left 4.5 million homes without power in subfreezing temperatures. Engineers who reviewed the event say the conditions that caused it are present in dozens of other states.</p>
+      <div class="byline">Editorial Staff · March 2025</div>
+    </div>
+    <div class="article-card">
+      <div class="tag">Natural Disasters</div>
+      <h3>Hurricane Season Prep: The 14-Day Power Independence Checklist</h3>
+      <p>FEMA recommends 72 hours of emergency supplies. Preparedness experts say that's dangerously insufficient. Here's what a realistic two-week plan looks like for a family of four.</p>
+      <div class="byline">Editorial Staff · April 2025</div>
+    </div>
+    <div class="article-card">
+      <div class="tag">Energy Independence</div>
+      <h3>The Hidden Cost of Dependence: What Utility Companies Don't Want You Calculating</h3>
+      <p>Over a 20-year period, the average American household will spend between $40,000 and $60,000 on electricity — with rates projected to climb another 30–40% by 2030.</p>
+      <div class="byline">Editorial Staff · May 2025</div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips-section" id="resources">
+    <div class="section-header">
+      <div class="section-title">Emergency Preparedness Basics</div>
+      <div class="section-rule"></div>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-item">
+        <div class="tip-number">01</div>
+        <div class="tip-content">
+          <h4>Audit Your Power Dependencies</h4>
+          <p>List every device your household depends on during an outage — medical equipment, refrigeration, heating/cooling. Knowing your baseline is step one.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-number">02</div>
+        <div class="tip-content">
+          <h4>Store More Than You Think You Need</h4>
+          <p>FEMA's 72-hour guideline is a minimum, not a target. Experienced preppers recommend 14–30 days of essential supplies for serious emergencies.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-number">03</div>
+        <div class="tip-content">
+          <h4>Plan for Communication Blackouts</h4>
+          <p>Cell towers typically fail within 4–8 hours of a grid outage. Hand-crank or battery-powered radios remain the most reliable emergency communication tool.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-number">04</div>
+        <div class="tip-content">
+          <h4>Diversify Your Power Sources</h4>
+          <p>No single backup solution is foolproof. Experienced emergency managers recommend layering multiple independent power solutions rather than relying on one.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-number">05</div>
+        <div class="tip-content">
+          <h4>Know Your Neighbors' Situation</h4>
+          <p>Community resilience matters. Knowing who around you has medical needs, who has resources, and who may need help can be critical in a prolonged outage.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-number">06</div>
+        <div class="tip-content">
+          <h4>Practice Before You Need To</h4>
+          <p>Run a 24-hour "grid-off" drill with your family once a year. The gaps in your preparedness will become obvious — while there's still time to fix them.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div id="contact">
+    <div class="section-header">
+      <div class="section-title">Contact Us</div>
+      <div class="section-rule"></div>
+    </div>
+    <div class="contact-section">
+      <div class="contact-intro">
+        <h2>Get In Touch With Our Editorial Team</h2>
+        <p>Survive The Shutdown is an independent publication focused on providing accurate, practical information to American families navigating energy uncertainty and emergency preparedness.</p>
+        <p>We welcome reader questions, tips, corrections, and general inquiries. Our editorial team reviews all submissions and responds within 3–5 business days.</p>
+        <div class="contact-detail">
+          <div>
+            <strong>Editorial Inquiries</strong>
+            editorial@survivetheshutdown.com
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div>
+            <strong>General Contact</strong>
+            info@survivetheshutdown.com
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div>
+            <strong>Response Time</strong>
+            3–5 business days
+          </div>
+        </div>
+      </div>
+
+      <div class="form-box">
+        <h3>Send Us a Message</h3>
+        <div id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="John">
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" placeholder="Smith">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <select>
+              <option value="">Select your state</option>
+              <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+              <option>Arkansas</option><option>California</option><option>Colorado</option>
+              <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+              <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+              <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+              <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+              <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+              <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+              <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+              <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+              <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+              <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+              <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+              <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+              <option>Texas</option><option>Utah</option><option>Vermont</option>
+              <option>Virginia</option><option>Washington</option><option>West Virginia</option>
+              <option>Wisconsin</option><option>Wyoming</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select>
+              <option>General Inquiry</option>
+              <option>Editorial Question</option>
+              <option>Report a Tip</option>
+              <option>Correction Request</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="Your message here..."></textarea>
+          </div>
+          <button class="btn-submit" onclick="submitForm()">Send Message</button>
+          <p class="form-disclaimer">Your information is never sold or shared with third parties.</p>
+        </div>
+        <div class="form-success" id="formSuccess">
+          <h4>Message Received</h4>
+          <p>Thank you for reaching out. Our editorial team will review your message and respond within 3–5 business days.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- About strip -->
+<div class="about-strip">
+  <div>
+    <h3>About Survive The Shutdown</h3>
+  </div>
+  <div>
+    <p>Survive The Shutdown is an independent editorial resource dedicated to helping American families understand energy vulnerability, grid reliability, and practical emergency preparedness. Our content is research-based and editorially independent. We do not represent any government agency, utility company, or political organization. All statistics cited are sourced from publicly available government and academic data.</p>
+  </div>
+</div>
+
+<!-- Footer -->
 <div class="footer">
-  This assessment is for informational purposes only.<br>
-  Results are based on your responses and general risk factors.
+  © 2025 Survive The Shutdown · All Rights Reserved<br>
+  <a href="#">Privacy Policy</a>
+  <a href="#">Terms of Use</a>
+  <a href="#">Editorial Standards</a>
+  <a href="#contact">Contact</a><br><br>
+  This website is for informational purposes only. Content does not constitute professional emergency management advice.
+  Statistics sourced from FEMA, EIA, and publicly available utility data.
 </div>
 
 <script>
-  const questions = [
-    {
-      text: "In the last 2 years, have you experienced a power outage lasting more than 24 hours?",
-      options: [
-        "Yes, more than once",
-        "Yes, at least once",
-        "Not yet — but I'm worried",
-        "No, never"
-      ]
-    },
-    {
-      text: "If the power grid went down today and stayed down for 2 weeks — how would your family survive?",
-      options: [
-        "We have a solid plan",
-        "We'd manage somehow",
-        "Honestly, we'd be in serious trouble",
-        "I don't even want to think about it"
-      ]
-    },
-    {
-      text: "How much does your household spend on electricity every month?",
-      options: [
-        "Less than $100",
-        "$100 – $200",
-        "$200 – $300",
-        "Over $300 — and it keeps going up"
-      ]
-    },
-    {
-      text: "Do you trust that the government or power companies would restore your electricity quickly in a major emergency?",
-      options: [
-        "Yes, completely",
-        "Maybe, but I'm not sure",
-        "No — I've seen what happens",
-        "Absolutely not"
-      ]
-    },
-    {
-      text: "What's your biggest concern right now?",
-      options: [
-        "Keeping my family safe during a blackout",
-        "Stopping paying so much for electricity",
-        "Not depending on the government for anything",
-        "All of the above"
-      ]
-    }
-  ];
-
-  const letters = ['A', 'B', 'C', 'D'];
-  let current = 0;
-
-  function startQuiz() {
-    document.getElementById('introScreen').style.display = 'none';
-    document.getElementById('questionScreen').style.display = 'block';
-    renderQuestion();
+  function submitForm() {
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
   }
 
-  function renderQuestion() {
-    const q = questions[current];
-    const pct = ((current + 1) / questions.length) * 100;
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressCount').textContent = `Question ${current + 1} of ${questions.length}`;
-
-    let html = `
-      <div class="question-number fade-in">Question ${current + 1} of ${questions.length}</div>
-      <div class="question-text fade-in">${q.text}</div>
-      <div class="options-list fade-in">
-    `;
-
-    q.options.forEach((opt, i) => {
-      html += `
-        <button class="option-btn" onclick="selectOption(this, ${i})">
-          <span class="option-letter">${letters[i]}</span>
-          ${opt}
-        </button>
-      `;
-    });
-
-    html += `</div>`;
-    document.getElementById('questionContent').innerHTML = html;
-  }
-
-  function selectOption(btn, idx) {
-    // Highlight selected
-    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-
-    // Advance after short delay
-    setTimeout(() => {
-      current++;
-      if (current < questions.length) {
-        renderQuestion();
-      } else {
-        showResults();
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 380);
-  }
-
-  function showResults() {
-    document.getElementById('questionScreen').style.display = 'none';
-    const r = document.getElementById('resultsScreen');
-    r.style.display = 'block';
-    r.classList.add('fade-in');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+    });
+  });
 </script>
 </body>
 </html>
