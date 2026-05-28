@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Energy Risk Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #cc0000;
+    --red-bright: #ff1a1a;
+    --red-dark: #8b0000;
+    --yellow: #ffcc00;
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --text-dim: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Alert bar */
+  .alert-bar {
+    background: var(--red);
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    animation: pulse-bar 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-bar {
+    0%, 100% { background: var(--red); }
+    50% { background: var(--red-dark); }
+  }
+
+  .alert-bar span {
+    display: inline-block;
+    margin: 0 8px;
+    opacity: 0.6;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .header-badge {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Main container */
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  /* Quiz wrapper */
+  .quiz-wrapper {
+    position: relative;
+  }
+
+  /* Intro screen */
+  .intro-screen {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .warning-icon {
+    font-size: 56px;
+    line-height: 1;
+    margin-bottom: 20px;
+    display: block;
+    animation: flicker 3s ease-in-out infinite;
+  }
+
+  @keyframes flicker {
+    0%, 90%, 100% { opacity: 1; }
+    92% { opacity: 0.4; }
+    94% { opacity: 1; }
+    96% { opacity: 0.3; }
+    98% { opacity: 1; }
+  }
+
+  .intro-headline {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .intro-headline .red { color: var(--red-bright); }
+
+  .intro-sub {
+    font-size: 16px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .timer-box {
+    background: var(--bg3);
+    border: 1px solid var(--red-dark);
+    border-left: 4px solid var(--red);
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .timer-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--red-bright);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.1; }
+  }
+
+  .timer-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .timer-text strong { color: var(--yellow); }
+
+  .btn-start {
+    display: block;
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 18px 30px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .btn-start:hover { background: var(--red-bright); }
+
+  .btn-start::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: shimmer 2.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
+
+  .btn-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  /* Question screen */
+  .question-screen { display: none; }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .progress-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .progress-count {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    color: var(--red-bright);
+    letter-spacing: 1px;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    transition: width 0.5s ease;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0;
+    width: 20px; height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--red-bright));
+    filter: blur(3px);
+  }
+
+  .question-number {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .question-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 600;
+    line-height: 1.25;
+    color: #fff;
+    margin-bottom: 28px;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-btn {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 16px 20px;
+    text-align: left;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-btn:hover {
+    border-color: var(--red);
+    background: rgba(204,0,0,0.08);
+    color: #fff;
+  }
+
+  .option-btn.selected {
+    border-color: var(--red-bright);
+    background: rgba(204,0,0,0.15);
+    color: #fff;
+  }
+
+  .option-letter {
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .option-btn:hover .option-letter,
+  .option-btn.selected .option-letter {
+    border-color: var(--red);
+    color: var(--red-bright);
+  }
+
+  /* Results screen */
+  .results-screen { display: none; }
+
+  .risk-meter {
+    background: var(--bg2);
+    border: 1px solid var(--red-dark);
+    padding: 24px 20px;
+    margin-bottom: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .risk-meter::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red-dark), var(--red-bright), var(--red-dark));
+    animation: scan 2s linear infinite;
+  }
+
+  @keyframes scan {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .risk-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .risk-level {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 700;
+    color: var(--red-bright);
+    line-height: 1;
+    margin-bottom: 6px;
+    animation: flicker 4s ease-in-out infinite;
+  }
+
+  .risk-subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  .result-headline {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(22px, 4.5vw, 32px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .result-headline .yellow { color: var(--yellow); }
+
+  .result-body {
+    font-size: 15px;
+    color: #bbb;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .result-body strong { color: #fff; }
+
+  .warning-list {
+    background: var(--bg3);
+    border-left: 3px solid var(--red);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .warning-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #bbb;
+  }
+
+  .warning-item .icon { color: var(--red-bright); flex-shrink: 0; font-size: 15px; }
+
+  .btn-cta {
+    display: block;
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 20px 30px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+    margin-bottom: 10px;
+  }
+
+  .btn-cta:hover { background: var(--red-bright); }
+
+  .btn-cta::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  .cta-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .cta-note .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--red-bright);
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+    animation: blink 1s infinite;
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: #444;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Fade in animation */
+  .fade-in {
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="alert-bar">
+  ⚠️ <span>•</span> WARNING: This page has been taken down 3 times this week <span>•</span> ⚠️
+</div>
+
+<div class="header">
+  <div class="header-badge">Urgent</div>
+  <div class="header-title">Home Energy Risk Assessment</div>
+</div>
+
+<div class="container">
+  <div class="quiz-wrapper">
+
+    <!-- INTRO SCREEN -->
+    <div class="intro-screen fade-in" id="introScreen">
+      <span class="warning-icon">⚡</span>
+      <h1 class="intro-headline">Is Your Home <span class="red">Completely Vulnerable</span> Right Now?</h1>
+      <p class="intro-sub">Take this 60-second assessment to find out if your family is at risk — and what thousands of Americans are quietly doing about it.</p>
+
+      <div class="timer-box">
+        <div class="timer-dot"></div>
+        <div class="timer-text">
+          <strong>⚠️ This page is being actively suppressed.</strong><br>
+          Power companies have filed 22 cease and desist letters to remove it. If it's still up — don't wait.
+        </div>
+      </div>
+
+      <button class="btn-start" onclick="startQuiz()">
+        ▶ &nbsp; Start My Assessment Now
+      </button>
+      <p class="btn-note">Takes 60 seconds · 5 questions · Free</p>
+    </div>
+
+    <!-- QUESTION SCREEN -->
+    <div class="question-screen" id="questionScreen">
+      <div class="progress-header">
+        <span class="progress-label">Assessment Progress</span>
+        <span class="progress-count" id="progressCount">Question 1 of 5</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 20%"></div>
+      </div>
+
+      <div id="questionContent"></div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div class="results-screen" id="resultsScreen">
+      <div class="risk-meter fade-in">
+        <div class="risk-label">Your Risk Level</div>
+        <div class="risk-level">HIGH RISK</div>
+        <div class="risk-subtitle">Based on your answers — your home is currently exposed</div>
+      </div>
+
+      <h2 class="result-headline fade-in">Your Home Is <span class="yellow">Not Protected</span> From What's Coming</h2>
+
+      <p class="result-body fade-in">
+        Based on your answers, your household falls into the <strong>high-risk category</strong> — meaning a single grid failure, rate hike, or government failure could leave your family completely exposed.<br><br>
+        Thousands of American homeowners have already discovered a little-known method to protect themselves — completely off the grid, with <strong>no solar panels, no generators, and no monthly payments.</strong>
+      </p>
+
+      <div class="warning-list fade-in">
+        <div class="warning-item"><span class="icon">▶</span> The power grid is more fragile than the government admits</div>
+        <div class="warning-item"><span class="icon">▶</span> Electric bills are projected to increase 40% in the next 3 years</div>
+        <div class="warning-item"><span class="icon">▶</span> FEMA response times average 5–7 days after major outages</div>
+        <div class="warning-item"><span class="icon">▶</span> Most families have less than 24 hours of backup power</div>
+      </div>
+
+      <a href="YOUR_VSL_URL_HERE" class="btn-cta">
+        Watch The Free Video Now →
+      </a>
+      <p class="cta-note">
+        <span class="dot"></span> This page keeps getting taken down. Watch before it disappears again.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  This assessment is for informational purposes only.<br>
+  Results are based on your responses and general risk factors.
+</div>
+
+<script>
+  const questions = [
+    {
+      text: "In the last 2 years, have you experienced a power outage lasting more than 24 hours?",
+      options: [
+        "Yes, more than once",
+        "Yes, at least once",
+        "Not yet — but I'm worried",
+        "No, never"
+      ]
+    },
+    {
+      text: "If the power grid went down today and stayed down for 2 weeks — how would your family survive?",
+      options: [
+        "We have a solid plan",
+        "We'd manage somehow",
+        "Honestly, we'd be in serious trouble",
+        "I don't even want to think about it"
+      ]
+    },
+    {
+      text: "How much does your household spend on electricity every month?",
+      options: [
+        "Less than $100",
+        "$100 – $200",
+        "$200 – $300",
+        "Over $300 — and it keeps going up"
+      ]
+    },
+    {
+      text: "Do you trust that the government or power companies would restore your electricity quickly in a major emergency?",
+      options: [
+        "Yes, completely",
+        "Maybe, but I'm not sure",
+        "No — I've seen what happens",
+        "Absolutely not"
+      ]
+    },
+    {
+      text: "What's your biggest concern right now?",
+      options: [
+        "Keeping my family safe during a blackout",
+        "Stopping paying so much for electricity",
+        "Not depending on the government for anything",
+        "All of the above"
+      ]
+    }
+  ];
+
+  const letters = ['A', 'B', 'C', 'D'];
+  let current = 0;
+
+  function startQuiz() {
+    document.getElementById('introScreen').style.display = 'none';
+    document.getElementById('questionScreen').style.display = 'block';
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    const pct = ((current + 1) / questions.length) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = `Question ${current + 1} of ${questions.length}`;
+
+    let html = `
+      <div class="question-number fade-in">Question ${current + 1} of ${questions.length}</div>
+      <div class="question-text fade-in">${q.text}</div>
+      <div class="options-list fade-in">
+    `;
+
+    q.options.forEach((opt, i) => {
+      html += `
+        <button class="option-btn" onclick="selectOption(this, ${i})">
+          <span class="option-letter">${letters[i]}</span>
+          ${opt}
+        </button>
+      `;
+    });
+
+    html += `</div>`;
+    document.getElementById('questionContent').innerHTML = html;
+  }
+
+  function selectOption(btn, idx) {
+    // Highlight selected
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    // Advance after short delay
+    setTimeout(() => {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }, 380);
+  }
+
+  function showResults() {
+    document.getElementById('questionScreen').style.display = 'none';
+    const r = document.getElementById('resultsScreen');
+    r.style.display = 'block';
+    r.classList.add('fade-in');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
