@@ -1,20 +1,5 @@
 <!doctype html>
 <html lang="en"><head>
-  <!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-
-fbq('init', '1587736573369535');
-fbq('track', 'PageView');
-</script>
-<!-- End Meta Pixel Code -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#37432e">
@@ -49,11 +34,24 @@ ul{list-style:none;padding:0;margin:1em 0}li{position:relative;padding:.65em 0 .
 .cta{display:block;width:fit-content;max-width:100%;margin:1em auto 0;background:var(--red);color:white;text-align:center;text-decoration:none;text-transform:uppercase;font:700 clamp(23px,3.2vw,38px)/1.1 var(--display);border-radius:5px;border-bottom:4px solid #70271f;padding:.52em 1em}
 .cta:hover{background:#802e28}.cta:focus-visible{outline:3px solid var(--olive);outline-offset:4px}
 @media(max-width:600px){.photo{margin:1em auto}.cta{width:100%}h1{letter-spacing:-.025em}}
-</style></head><body>
-  <noscript>
-  <img height="1" width="1" style="display:none" alt=""
-       src="https://www.facebook.com/tr?id=1587736573369535&ev=PageView&noscript=1">
-</noscript>
+</style><!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1587736573369535');
+fbq('track', 'PageView');
+</script>
+<!-- End Meta Pixel Code -->
+</head><body>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=1587736573369535&amp;ev=PageView&amp;noscript=1"></noscript>
+
 <header><div class="bar"><span class="brand">EmergiKit</span><span class="tag">Advertorial</span></div></header>
 <main><p class="kicker">Picture the phone call...</p><h1>What If Your Parents Were Home Alone Tonight and <em>the Power Suddenly Went Out?</em></h1><p class="lead"><strong>Your mom says, “We’re fine, honey.” Then you hear your dad in the background asking where the flashlight is.</strong></p>
 <figure class="photo cover"><img src="images/01-portada.webp" alt="Mom on the phone while Dad looks for a flashlight in the dark kitchen." decoding="async" width="1200" height="800"></figure>
@@ -90,4 +88,19 @@ ul{list-style:none;padding:0;margin:1em 0}li{position:relative;padding:.65em 0 .
 <p>Now there’s something you can actually do for them from your end of the phone.</p>
 <div class="offer"><h2>See what’s inside EmergiKit</h2><p>Take a look at all 32 emergency essentials, check the current offer, and decide whether EmergiKit is right for your parents’ home.</p><p class="turn">The kit also comes with a 90-day money-back guarantee.</p>
 <a class="cta" href="https://go.digitalpresencenow.com/cf/click/1">See the Full Kit &amp; Current Offer →</a></div>
-</article></main></body></html>
+</article></main>
+<!-- Track clicks to the offer without changing Clickflare navigation -->
+<script>
+document.querySelectorAll(
+  'a[href="https://go.digitalpresencenow.com/cf/click/1"]'
+).forEach(function (link) {
+  link.addEventListener('click', function () {
+    if (typeof window.fbq === 'function') {
+      fbq('trackCustom', 'OutboundClick', {
+        content_name: 'EmergiKit'
+      });
+    }
+  });
+});
+</script>
+</body></html>
